@@ -34,7 +34,6 @@ export default function Table() {
                 {item.status === 1 ? "EM ESTOQUE" : "SEM ESTOQUE"}
             </Text>
             <Text style={styles.cell}>{item.nomeProduto}</Text>
-            <Text style={styles.cell}>{item.idProduto}</Text>
             <Text style={styles.cell}>{item.preco}</Text>
             <Text style={styles.cell}>{item.quantidade} unidades</Text>
         </View>
@@ -42,16 +41,13 @@ export default function Table() {
 
     return (
         <View style={styles.container}>
-            {/* Header da tabela */}
             <View style={styles.headerRow}>
-                <Text style={styles.headerCell}>STATUS</Text>
+                <Text style={styles.headerCell}>ESTOQUE</Text>
                 <Text style={styles.headerCell}>PRODUTO</Text>
-                <Text style={styles.headerCell}>ID</Text>
                 <Text style={styles.headerCell}>PREÇO</Text>
                 <Text style={styles.headerCell}>QUANTIDADE</Text>
             </View>
 
-            {/* Lista de produtos com pull-to-refresh */}
             <FlatList
                 data={produtos}
                 renderItem={renderItem}
@@ -75,7 +71,7 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingVertical: 10,
+        paddingVertical: 12,
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
         paddingHorizontal: 10,
@@ -92,7 +88,7 @@ const styles = StyleSheet.create({
     headerCell: {
         color: '#fff',
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: 14, // Aumentei o tamanho da fonte
         textAlign: 'center',
         flex: 1,
     },

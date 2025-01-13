@@ -48,6 +48,24 @@ app.get('/produtos', (req, res) => {
   });
 });
 
+app.get("/financeiro", (req, res) => {
+  // Verificando se o parâmetro _dataMovimento foi passado na query
+  const { dataMovimento } = req.query;
+
+  // Se a data não for passada, podemos fazer a chamada sem ela, dependendo da lógica
+  // Caso contrário, passamos a data como parâmetro para a stored procedure
+  db.query("CALL sp_FinanceiroMovimento_Realizado(?)", [dataMovimento || null], (err, results) => {
+    if (err) {
+      console.error("Erro ao consultar dados:", err);
+      return res.status(500).send("Erro ao consultar dados");
+    }
+    
+    // Enviando os resultados para o cliente
+    res.json(results[0]); // Resultados geralmente estão na primeira posição do array
+  });
+});
+
+
 // Iniciar o servidor
 app.listen(port, () => {
   console.log(`API rodando em http://localhost:${port}`);
