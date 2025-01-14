@@ -1,64 +1,65 @@
-import { Text, View, TouchableOpacity, StyleSheet} from "react-native";
-import Table from "../Table/index";
-import * as Animatable from "react-native-animatable";
-
+import React from "react";
+import { Text, View, FlatList, StyleSheet } from "react-native";
+import { usePedidos } from "./hooks/useProdutos";
 
 export default function Products() {
-      return(
-            <Animatable.View style={styles.container} animation={"fadeInUp"} delay={1000}>
-                  <Text style={styles.text}>TODOS OS PRODUTOS</Text>
-                  <Table />
-                  <View style={styles.buttonContainer}> 
-                        <TouchableOpacity 
-                        style={styles.button}>
-                              <Text style={styles.buttonText}>Cadastrar Produto</Text>
-                        </TouchableOpacity> 
-                  </View>
-                  <View style={styles.buttonContainer}> 
-                        <TouchableOpacity 
-                        style={styles.button}>
-                              <Text style={styles.buttonText}>Deletar Produto</Text>
-                        </TouchableOpacity> 
-                  </View>
-                  <View style={styles.buttonContainer}> 
-                        <TouchableOpacity 
-                        style={styles.button}>
-                              <Text style={styles.buttonText}>Editar Produto</Text>
-                        </TouchableOpacity> 
-                  </View>
-            </Animatable.View>
-      )
+  const { pedidosData, loading, error } = usePedidos();
+
+  // Exibe mensagem de carregamento enquanto os dados não são carregados
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Carregando...</Text>
+      </View>
+    );
+  }
+
+  // Exibe mensagem de erro caso a requisição tenha falhado
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>{error}</Text>
+      </View>
+    );
+  }
+
+  // Exibe os dados dos pedidos quando a requisição for bem-sucedida
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Produtos</Text>
+      {pedidosData && pedidosData.length > 0 ? (
+        <FlatList
+          data={pedidosData}
+          keyExtractor={(item) => item.idProduto.toString()}
+          renderItem={({ item }) => (
+            <Text style={styles.itemText}>{item.nomeProduto}</Text> // Use 'nomeProduto' instead of 'nome'
+          )}
+        />
+      ) : (
+        <Text style={styles.text}>Não há pedidos disponíveis.</Text>
+      )}
+    </View>
+  );
 }
 
-
 const styles = StyleSheet.create({
-      container: {
-            flex: 1,
-            width: '100%',
-            padding: '0.2%',
-      },
-      text: {
-            fontSize: 20,
-            color: 'black',
-      },
-      buttonContainer: {
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            width: '100%', 
-      },
-      button: {
-            backgroundColor: 'red',
-            padding: 10,
-            borderRadius: 7,
-            marginTop: 10,
-            color: 'white',
-            width: '40%', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-      },
-      buttonText: {
-            color: '#fff',
-            fontSize: 17,
-            textAlign: 'center', 
-      },
-})
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  text: {
+    fontSize: 16,
+    color: "#333",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  itemText: {
+    fontSize: 18,
+    marginVertical: 5,
+  },
+});

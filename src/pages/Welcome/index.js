@@ -33,7 +33,7 @@ export default function Welcome(){
                         <Text style={styles.title}>Pronto para melhorar a administração do seu negócio?</Text>
                         <Text style={styles.text}>Faça login para começar!</Text>
                         <TouchableOpacity style={styles.button}
-                        onPress={() => navigation.navigate("SignIn")}>
+                        onPress={() => navigation.navigate("Produtos")}>
                         <Text style={styles.buttonText}>Acessar</Text>
                         </TouchableOpacity>
                   </Animatable.View>

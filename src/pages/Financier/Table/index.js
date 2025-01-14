@@ -1,51 +1,45 @@
-import { View, Text, FlatList, RefreshControl, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from 'react';
+import { View, Text, FlatList, RefreshControl, StyleSheet, TouchableOpacity, Modal, Button } from 'react-native';
+import { useVendas } from '../hooks/useVendas';
+import { Feather } from '@expo/vector-icons';
 
 export default function Table() {
-  const [vendasData, setVendas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const vendasI = async () => {
-    try {
-      const response = await axios.get("http://192.168.1.9:3000/financeiro");
-      setVendas(response.data);
-      setLoading(false);
-    } catch (error) {
-      setError("Erro ao fazer a requisição");
-      setLoading(false);
-    }
+  const { vendasData, loading, error, vendasI } = useVendas();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+   
+  const viewProducts = (idFinanceiroGrupoPedido) => {
+    setSelectedId(idFinanceiroGrupoPedido);  
+    setModalVisible(true);  
   };
 
-  const renderItem = ({ item }) => {
-    return (
-      <View style={styles.row}>
-        <Text style={styles.cell}>{item.nomeGrupoPedido}</Text>
-        <Text style={styles.cell}>{item.valorPedido}</Text>
-        <Text style={styles.cell}>{item.valorMovimento}</Text>
-        <Text style={styles.cell}>
-          {new Date(item.dataMovimento).toLocaleDateString("pt-BR")}
-        </Text>
-      </View>
-    );
-  };
-
-  useEffect(() => {
-    vendasI();
-  }, []);
+  const renderItem = ({ item }) => (
+    <View style={styles.row}>
+      <Text style={styles.cell}>N°{item.idFinanceiroGrupoPedido}</Text>
+      <Text style={styles.cell}>N°{item.idGrupoPedido}</Text>
+      <Text style={styles.cell}>R${item.valorPedido},00</Text>
+      <Text style={styles.cell}>R${item.valorMovimento},00</Text>
+      <Text style={styles.cell}>
+        {new Date(item.dataMovimento).toLocaleDateString("pt-BR")}
+      </Text>
+      <TouchableOpacity onPress={() => viewProducts(item.idGrupoPedido)}>
+        <Feather name="more-vertical" size={24} color={"black"} style={styles.threeDots} />
+      </TouchableOpacity>
+    </View>
+  );
 
   if (loading) {
-    return <Text>Carregando...</Text>; // Exibe enquanto carrega os dados
+    return <Text>Carregando...</Text>;
   }
 
   if (error) {
-    return <Text>{error}</Text>; // Exibe se houve erro na requisição
+    return <Text>{error}</Text>;
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
+        <Text style={styles.headerCell}>CÓDIGO</Text>
         <Text style={styles.headerCell}>PEDIDO</Text>
         <Text style={styles.headerCell}>VALOR TOTAL</Text>
         <Text style={styles.headerCell}>VALOR PAGO</Text>
@@ -55,10 +49,21 @@ export default function Table() {
         data={vendasData}
         renderItem={renderItem}
         keyExtractor={(item) => item.idGrupoPedido.toString()}
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={vendasI} />
-        }
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={vendasI} />}
       />
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalHeader}>Produtos do Pedido {selectedId}</Text>
+            <Button title="Fechar" onPress={() => setModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -69,6 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     borderRadius: 22,
     overflow: "hidden",
+    padding: 10,
   },
   row: {
     flexDirection: "row",
@@ -77,11 +83,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     paddingHorizontal: 10,
+    alignItems: "center",
   },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#38a69d", // Cor do cabeçalho
+    backgroundColor: "#38a69d",
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderBottomWidth: 2,
@@ -91,13 +98,36 @@ const styles = StyleSheet.create({
   headerCell: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 14, // Aumentei o tamanho da fonte
+    fontSize: 12,
     textAlign: "center",
     flex: 1,
   },
   cell: {
-    fontSize: 14,
+    fontSize: 12,
     textAlign: "center",
     flex: 1,
+  },
+  threeDots: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#38a69d",
+    textAlign: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  modalHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });

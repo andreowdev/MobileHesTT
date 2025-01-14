@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
   host: 'localhost', 
   user: 'root',      
-  password: '21042018',      
+  password: '01042018',      
   database: 'hest' 
 });
 
@@ -26,7 +26,6 @@ db.connect((err) => {
   console.log('Conectado ao banco de dados MySQL!');
 });
 
-// Endpoint para pegar dados
 app.get('/users', (req, res) => {
   db.query('SELECT * FROM funcionario', (err, results) => {
     if (err) {
@@ -49,22 +48,32 @@ app.get('/produtos', (req, res) => {
 });
 
 app.get("/financeiro", (req, res) => {
-  // Verificando se o parâmetro _dataMovimento foi passado na query
-  const { dataMovimento } = req.query;
+  const { dataMovimento, ano, mes } = req.query;
 
-  // Se a data não for passada, podemos fazer a chamada sem ela, dependendo da lógica
-  // Caso contrário, passamos a data como parâmetro para a stored procedure
-  db.query("CALL sp_FinanceiroMovimento_Realizado(?)", [dataMovimento || null], (err, results) => {
+  db.query("CALL sp_FinanceiroMovimento_Realizado(?, ?, ?)",
+    [dataMovimento, ano, mes],  (err, results) => {
     if (err) {
       console.error("Erro ao consultar dados:", err);
       return res.status(500).send("Erro ao consultar dados");
     }
     
-    // Enviando os resultados para o cliente
-    res.json(results[0]); // Resultados geralmente estão na primeira posição do array
+    res.json(results[0]); 
   });
 });
 
+app.get("/pedidos", (req, res) => {
+
+    const {idGrupoPedido} = req.query
+
+    db.query('CALL sp_GrupoPedido_ListarProduto(?)',
+    [idGrupoPedido], (err, results) => {
+      if(err) {
+        console.error("Erro ao consultar dados: ", err);
+        return res.status(500).send("Erro ao consultar dados");
+      }
+      res.json(results[0]);
+    })
+})
 
 // Iniciar o servidor
 app.listen(port, () => {

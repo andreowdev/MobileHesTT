@@ -17,14 +17,14 @@ function BottomTabs() {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: '#121212', // Cor de fundo do tab bar
-          height: 60, // Altura do tab bar
-          borderTopColor: 'transparent', // Remove a linha superior
+          backgroundColor: '#121212', 
+          height: 60, 
+          borderTopColor: 'transparent', 
         },
-        tabBarActiveTintColor: '#ffffff', // Cor do ícone ativo
+        tabBarActiveTintColor: '#ffffff',
         tabStyle: {
-          paddingBottom: 5, // Espaçamento interno
-          paddingTop: 5, // Espaçamento interno
+          paddingBottom: 5,
+          paddingTop: 5, 
         },
       }}
     >
@@ -70,21 +70,26 @@ export default function Routes() {
         options={{ headerShown: false }}
       />
       
-      { <Stack.Screen
+      {/* { <Stack.Screen
         name="SignIn"
         component={SignIn}
         options={{ headerShown: false }}
         listeners={{
           focus: () => setIsLoggedIn(true), // Quando o usuário se autentica
         }}
-      /> }
+      /> } */}
 
       {/* Condicional para mostrar o BottomTabs quando logado */}
-      <Stack.Screen
+     {/*  <Stack.Screen
         name="Home"
         component={isLoggedIn ? BottomTabs : Home}  // Usando BottomTabs se logado
         options={{ headerShown: false }}
-      />
+      /> */}
+
+      <Stack.Screen
+       name='Produtos'
+       component={Products}
+       options={{headerShown: false}}/>
 
     </Stack.Navigator>
   );

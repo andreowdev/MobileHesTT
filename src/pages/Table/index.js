@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import axios from 'axios';
 
+
 export default function Table() {
     const [produtos, setProdutos] = useState([]);
     const [loading, setLoading] = useState(true); 
